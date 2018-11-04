@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">flashlight</string>
+    <string name="enable_text">On</string>
+    <string name="disable_text">Off</string>
+    <string name="need_permission_text">N/A</string>
+</resources>
