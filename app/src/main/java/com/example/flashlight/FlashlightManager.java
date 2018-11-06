@@ -59,7 +59,7 @@ public class FlashlightManager {
                     super.onTorchModeChanged(cameraId, enabled);
                     Log.d(TAG, "Flashlight status callback: " + (enabled ? "true" : "false"));
                     flashLightStatus = enabled;
-                    context.setButtonVisualStatus();
+                    context.updateButtonAppearance();
                 }
             };
 
@@ -68,55 +68,27 @@ public class FlashlightManager {
         }
     }
 
-    private void flashLightOff() {
-        Log.d(TAG, "Turn flashlight OFF");
-        if (torchCallback == null)
-            return;
-
+    public void toggleFlashlight() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             CameraManager cameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
 
             try {
                 String cameraId = cameraManager.getCameraIdList()[0];
-                cameraManager.setTorchMode(cameraId, false);
+                cameraManager.setTorchMode(cameraId, !flashLightStatus);
             } catch (CameraAccessException e) {
                 Log.e(TAG, e.toString());
             }
         } else {
             Camera camera = Camera.open();
             Camera.Parameters parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            parameters.setFlashMode(
+                    flashLightStatus
+                            ? Camera.Parameters.FLASH_MODE_OFF
+                            : Camera.Parameters.FLASH_MODE_ON
+            );
             camera.setParameters(parameters);
             camera.stopPreview();
         }
-    }
-
-    private void flashLightOn() {
-        Log.d(TAG, "Turn flashlight ON");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            CameraManager cameraManager = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
-
-            try {
-                String cameraId = cameraManager.getCameraIdList()[0];
-                cameraManager.setTorchMode(cameraId, true);
-            } catch (CameraAccessException e) {
-                Log.e(TAG, e.toString());
-            }
-        } else {
-            Camera camera = Camera.open();
-            Camera.Parameters parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            camera.setParameters(parameters);
-            camera.startPreview();
-        }
-
-    }
-
-    public void toggleFlashlight() {
-        if (flashLightStatus)
-            flashLightOff();
-        else
-            flashLightOn();
     }
 
     public boolean getFlashLightStatus() {

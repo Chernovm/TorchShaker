@@ -103,7 +103,6 @@ public class FlashlightControlActivity extends AppCompatActivity implements Shak
         switch(requestCode) {
             case CAMERA_REQUEST :
                 if (grantResults.length > 0  &&  grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    buttonToggle.setText(R.string.enable_text);
                     hasCameraPermission = true;
                     updateUi();
                     flashlightManager.updateFlashLightStatus();
@@ -119,17 +118,21 @@ public class FlashlightControlActivity extends AppCompatActivity implements Shak
         if (buttonToggle != null)
             buttonToggle.setEnabled(hasCameraPermission);
 
-        setButtonVisualStatus();
+        updateButtonAppearance();
     }
 
-    public void setButtonVisualStatus() {
+    public void updateButtonAppearance() {
         boolean status = flashlightManager.getFlashLightStatus();
         Log.d(TAG, "Update UI " + (status ? "true" : "false"));
 
-        if (status)
+        if (status) {
             buttonToggle.setText(R.string.disable_text);
-        else
+            buttonToggle.setBackgroundColor(getResources().getColor(R.color.colorInactive));
+        }
+        else {
             buttonToggle.setText(R.string.enable_text);
+            buttonToggle.setBackgroundColor(getResources().getColor(R.color.colorActive));
+        }
     }
 
     public boolean getHasCameraPermission() {
